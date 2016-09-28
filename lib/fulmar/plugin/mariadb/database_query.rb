@@ -11,7 +11,7 @@ module Fulmar
         alias_method :connected?, :connected
 
         DEFAULT_CONFIG = {
-          maria: {
+          mariadb: {
             host: '127.0.0.1',
             port: 3306,
             user: 'root',
@@ -44,7 +44,7 @@ module Fulmar
           end
 
           @connected = true
-          query("USE #{@config[:maria][:database]}")
+          query("USE #{@config[:mariadb][:database]}")
         end
 
         def disconnect
@@ -58,7 +58,7 @@ module Fulmar
         end
 
         def tunnel
-          @tunnel ||= Fulmar::Infrastructure::Service::TunnelService.new(@config.ssh_user_and_host, @config[:maria][:port], @config[:maria][:hostname])
+          @tunnel ||= Fulmar::Infrastructure::Service::TunnelService.new(@config.ssh_user_and_host, @config[:mariadb][:port], @config[:mariadb][:hostname])
         end
 
         # shortcut for DatabaseService.client.query
@@ -75,21 +75,21 @@ module Fulmar
 
         def command(binary)
           command = binary
-          command << " -h #{@config[:maria][:host]}" unless @config[:maria][:host].blank?
-          command << " -u #{@config[:maria][:user]}" unless @config[:maria][:user].blank?
-          command << " --password='#{@config[:maria][:password]}'" unless @config[:maria][:password].blank?
+          command << " -h #{@config[:mariadb][:host]}" unless @config[:mariadb][:host].blank?
+          command << " -u #{@config[:mariadb][:user]}" unless @config[:mariadb][:user].blank?
+          command << " --password='#{@config[:mariadb][:password]}'" unless @config[:mariadb][:password].blank?
           command
         end
 
         def dump(filename = backup_filename)
           filename = "#{@config[:remote_path]}/#{filename}" unless filename[0, 1] == '/'
 
-          @shell.run "#{command('mysqldump')} #{@config[:maria][:database]} --single-transaction #{diffable} #{ignore_tables} -r \"#{filename}\""
+          @shell.run "#{command('mysqldump')} #{@config[:mariadb][:database]} --single-transaction #{diffable} #{ignore_tables} -r \"#{filename}\""
 
           filename
         end
 
-        def load_dump(dump_file, database = @config[:maria][:database])
+        def load_dump(dump_file, database = @config[:mariadb][:database])
           @shell.run "#{command('mysql')} -D #{database} < #{dump_file}"
         end
 
@@ -135,20 +135,20 @@ module Fulmar
 
         # Return mysql command line options to ignore specific tables
         def ignore_tables
-          @config[:maria][:ignore_tables] = [*@config[:maria][:ignore_tables]]
-          @config[:maria][:ignore_tables].map do |table|
-            "--ignore-table=#{@config[:maria][:database]}.#{table}"
+          @config[:mariadb][:ignore_tables] = [*@config[:mariadb][:ignore_tables]]
+          @config[:mariadb][:ignore_tables].map do |table|
+            "--ignore-table=#{@config[:mariadb][:database]}.#{table}"
           end.join(' ')
         end
 
         # Return the mysql configuration options to make a dump diffable
         def diffable
-          @config[:maria][:diffable_dump] ? '--skip-comments --skip-extended-insert ' : ''
+          @config[:mariadb][:diffable_dump] ? '--skip-comments --skip-extended-insert ' : ''
         end
 
         # Test configuration
         def config_test
-          fail 'Configuration option "database" missing.' unless @config[:maria][:database]
+          fail 'Configuration option "database" missing.' unless @config[:mariadb][:database]
         end
 
         # Builds the filename for a new database backup file
@@ -156,7 +156,7 @@ module Fulmar
         # time from to different clients. I won't handle this as it is unlikely and
         # would result in more I/O
         def backup_filename
-          "#{@config[:maria][:database]}_#{Time.now.strftime('%Y-%m-%dT%H%M%S')}.sql"
+          "#{@config[:mariadb][:database]}_#{Time.now.strftime('%Y-%m-%dT%H%M%S')}.sql"
         end
 
         def initialize_shell
@@ -172,10 +172,10 @@ module Fulmar
                               :connect_timeout, :reconnect, :local_infile, :secure_auth, :default_file, :default_group,
                               :init_command
                              ]
-          options = { host: '127.0.0.1', username: @config[:maria][:user] }
+          options = { host: '127.0.0.1', username: @config[:mariadb][:user] }
 
           possible_options.each do |option|
-            options[option] = @config[:maria][option] unless @config[:maria][option].nil?
+            options[option] = @config[:mariadb][option] unless @config[:mariadb][option].nil?
           end
 
           options
