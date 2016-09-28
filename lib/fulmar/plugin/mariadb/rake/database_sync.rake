@@ -9,7 +9,8 @@ def create_update_task(from, to)
   namespace to[:name] do
     task "from_#{from[:name]}" do
       # Add a bit of security
-      if %w(live prod production).include?(to[:environment])
+      if %w(live prod production).include?(to[:environment]) && !ARGV.include?('--force')
+        ARGV.reject! { |param| param == '--force' }
         warning 'You are about to update the live database from another source.'
         print 'Are you sure? [y/N] '
         answer = STDIN.gets
