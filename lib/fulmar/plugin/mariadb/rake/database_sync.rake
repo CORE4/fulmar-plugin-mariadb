@@ -1,5 +1,5 @@
 db_configs = []
-configuration.each do |env, target, data|
+config.each do |env, target, data|
   db_configs << [env, target] unless data[:mariadb].nil?
 end
 
