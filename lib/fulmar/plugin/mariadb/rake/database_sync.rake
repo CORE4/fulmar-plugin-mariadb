@@ -8,6 +8,14 @@ end
 def create_update_task(from, to)
   namespace to[:name] do
     task "from_#{from[:name]}" do
+      # Add a bit of security
+      if %w(live prod production).include?(to[:environment])
+        warning 'You are about to update the live database from another source.'
+        print 'Are you sure? [y/N] '
+        answer = STDIN.gets
+        exit if answer.downcase != 'y'
+      end
+
       config.set(from[:environment], from[:target])
       info 'Getting dump...'
       sql_dump = database.download_dump
