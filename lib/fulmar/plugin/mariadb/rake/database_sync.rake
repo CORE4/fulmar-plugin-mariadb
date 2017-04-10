@@ -1,6 +1,6 @@
 db_configs = []
 config.each do |env, target, data|
-  db_configs << [env, target] unless data[:mariadb].nil?
+  db_configs << [env, target] unless data[:mariadb].nil? || data[:mariadb][:database].nil?
 end
 
 # Expects two hashes as parameters each with { :environment, :target, :name } set
