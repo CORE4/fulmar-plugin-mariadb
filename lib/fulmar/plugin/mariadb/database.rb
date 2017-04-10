@@ -25,6 +25,7 @@ module Fulmar
           @config.merge DEFAULT_CONFIG
           @shell = shell
           @local_shell = local_shell || Fulmar::Shell.new(@config[:mariadb][:dump_path])
+          @local_shell.debug = true if config[:debug] # do not deactivate debug mode is shell set it explicitly
           config_test
         end
 
