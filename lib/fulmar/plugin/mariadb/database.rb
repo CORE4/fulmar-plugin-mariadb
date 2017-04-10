@@ -62,7 +62,11 @@ module Fulmar
         end
 
         def load_dump(dump_file, database = @config[:mariadb][:database])
-          @shell.run "#{command('mysql')} -D #{database} < #{dump_file}"
+          if File.extname(dump_file) == '.gz'
+            @shell.run "cat #{dump_file} | gzip -d | #{command('mysql')} -D #{database}"
+          else
+            @shell.run "#{command('mysql')} -D #{database} < #{dump_file}"
+          end
         end
 
         def download_dump(filename = "#{backup_filename}.gz")
