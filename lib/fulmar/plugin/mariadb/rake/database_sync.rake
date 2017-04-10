@@ -19,14 +19,16 @@ def create_update_task(from, to)
 
       config.set(from[:environment], from[:target])
       info 'Getting dump...'
-      sql_dump = database.download_dump
+      sql_dump = mariadb.download_dump
       if sql_dump == ''
         error 'Cannot create sql dump'
       else
         config.set(to[:environment], to[:target])
         info 'Sending dump...'
-        remote_sql_dump = upload(sql_dump, config[:mariadb][:dump_path])
-        database.load_dump(remote_sql_dump)
+        dump_path = config[:mariadb][:dump_path] ||
+          Fulmar::Plugin::MariaDB::Database::DEFAULT_CONFIG[:mariadb][:dump_path]
+        remote_sql_dump = upload(sql_dump, dump_path)
+        mariadb.load_dump(remote_sql_dump)
       end
     end
   end
