@@ -69,6 +69,7 @@ module Fulmar
           local_path = filename[0, 1] == '/' ? filename : "#{@config[:mariadb][:dump_path]}/#{filename}"
           remote_command = "#{dump_command} | gzip"
           @local_shell.run "ssh #{@config.ssh_user_and_host} \"#{remote_command}\" > #{local_path}"
+          local_path
         end
 
         protected
