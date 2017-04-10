@@ -43,7 +43,7 @@ def create_update_tasks(db_configs)
     counts[config.first] += 1
   end
 
-  namespace :update do
+  namespace :database do
     db_configs.each do |from_db|
       db_configs.each do |to_db|
         next if from_db == to_db # no need to sync a database to itself
@@ -65,7 +65,7 @@ def create_update_tasks(db_configs)
 end
 
 if db_configs.any?
-  namespace :database do
+  namespace :update do
     create_update_tasks(db_configs) if db_configs.count > 1
   end
 end
