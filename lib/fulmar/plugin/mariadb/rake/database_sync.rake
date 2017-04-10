@@ -25,7 +25,7 @@ def create_update_task(from, to)
       else
         config.set(to[:environment], to[:target])
         info 'Sending dump...'
-        remote_sql_dump = upload(sql_dump)
+        remote_sql_dump = upload(sql_dump, config[:mariadb][:dump_path])
         database.load_dump(remote_sql_dump)
       end
     end
