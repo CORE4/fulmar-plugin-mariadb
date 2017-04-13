@@ -5,6 +5,10 @@ a database for example. The main use case for this is to create / load sql dumps
 
 Please feel free to ask for help.
 
+## Prerequisites
+
+This plugin needs the mysql client to be installed.
+
 ## Installation
 
 This plugin will be installable via gem install `fulmar-plugin-mariadb` when it is working. It will need Fulmar 2.
@@ -13,7 +17,33 @@ You can also checkout this repo and run `gem build fulmar-plugin-mariadb.gemspec
 
 ## Usage
 
-(not done yet)
+Add the plugin to your config.yml of the project:
+
+```yaml
+plugins:
+  mariadb:
+```
+
+And add a configuration to either an environment or a host:
+
+```yaml
+environments:
+  live:
+    cms:
+      mariadb:
+        host: 127.0.0.1
+        user: cms_user
+        password: password
+        database: cms_db_1
+```
+
+You can use the [.my.cnf](https://easyengine.io/tutorials/mysql/mycnf-preference/) file if you don't want to put
+your database credentials into the config.
+
+## Known limitations
+
+Query cannot contain single quotes at the moment. This is due to the queries beeing passed to the mysql shell client
+and escaping does not work correctly then. So you should avoid running complex queries with this fulmar plugin. 
 
 ## Contributing
 
