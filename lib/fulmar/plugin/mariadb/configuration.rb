@@ -10,6 +10,10 @@ module Fulmar
           @config = config
         end
 
+        def test_files
+          ["#{File.dirname(__FILE__)}/config_tests/mariadb.rb"]
+        end
+
         def rake_files
           Dir.glob(File.dirname(__FILE__)+'/rake/*.rake')
         end
